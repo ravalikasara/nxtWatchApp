@@ -101,7 +101,7 @@ class Home extends Component {
             Try different key words or remove search filter
           </FailurePara>
           <div className="retry-container">
-            <button type="button">Retry</button>
+            <HomeRetryButton>Retry</HomeRetryButton>
           </div>
         </div>
       )
@@ -117,7 +117,7 @@ class Home extends Component {
   }
 
   Failure = Light => (
-    <div className="failure-container">
+    <div>
       {Light ? (
         <img
           className="failure-img"
@@ -193,8 +193,11 @@ class Home extends Component {
                         <p>Buy Nxt Watch Premium</p>
                         <BannerButton>GET IT NOW</BannerButton>
                       </div>
-                      <HomeCloseButton data-testid="close">
-                        <AiOutlineClose onClick={this.removeBanner} />
+                      <HomeCloseButton
+                        onClick={this.removeBanner}
+                        data-testid="close"
+                      >
+                        <AiOutlineClose />
                       </HomeCloseButton>
                     </HomeBanner>
                   ) : null}

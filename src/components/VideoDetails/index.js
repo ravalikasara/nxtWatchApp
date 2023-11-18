@@ -35,9 +35,8 @@ class VideoDetails extends Component {
     status: 'Initial',
     likeColor: '#64748b',
     dislikeColor: '#64748b',
-    saveColor: '#64748b',
+
     videosDetails: [],
-    saveStatus: false,
   }
 
   componentDidMount() {
@@ -92,18 +91,20 @@ class VideoDetails extends Component {
     </div>
   )
 
-  Success = (Light, changeSavedList) => {
-    const {saveStatus, likeColor, dislikeColor, saveColor} = this.state
+  Success = (Light, changeSavedList, savedList) => {
+    const {likeColor, dislikeColor} = this.state
     const {videosDetails} = this.state
     const date = formatDistanceToNow(new Date(videosDetails.publishedAt)).split(
       ' ',
     )
 
-    const {channel} = videosDetails
+    const {channel, id} = videosDetails
     const profileImage = channel.profile_image_url
     const subscribersCount = channel.subscriber_count
 
     const dats = date.slice(1).join(' ')
+    const isVideoSaved = savedList.filter(each => each.id === id)
+    const saveColor = isVideoSaved.length === 0 ? '#64748b' : '#2563eb'
 
     return (
       <div className="video-details">
@@ -155,7 +156,7 @@ class VideoDetails extends Component {
               >
                 <RiPlayListAddLine />
                 <LikesText Color={saveColor} className="likes">
-                  {saveStatus ? 'Saved' : 'Save'}
+                  {isVideoSaved.length > 0 ? 'Saved' : 'Save'}
                 </LikesText>
               </LikesButton>
             </div>
@@ -211,21 +212,6 @@ class VideoDetails extends Component {
     this.setState({likeColor: newLikeColor, dislikeColor: newDislikeColor})
   }
 
-  save = changeSavedList => {
-    const {saveColor, videosDetails} = this.state
-
-    let newSaveColor = '#64748b'
-
-    if (saveColor === '#64748b') {
-      newSaveColor = '#2563eb'
-    }
-    this.setState(prev => ({
-      saveColor: newSaveColor,
-      saveStatus: !prev.saveStatus,
-    }))
-    changeSavedList(videosDetails)
-  }
-
   dislike = () => {
     const {likeColor, dislikeColor} = this.state
 
@@ -241,13 +227,18 @@ class VideoDetails extends Component {
     this.setState({likeColor: newLikeColor, dislikeColor: newDislikeColor})
   }
 
+  save = changeSavedList => {
+    const {videosDetails} = this.state
+    changeSavedList(videosDetails)
+  }
+
   render() {
     const {status} = this.state
 
     return (
       <BackgroundTheme.Consumer>
         {value => {
-          const {isLightBackgroundTheme, changeSavedList} = value
+          const {isLightBackgroundTheme, changeSavedList, savedList} = value
           return (
             <>
               <Header />
@@ -265,6 +256,7 @@ class VideoDetails extends Component {
                         return this.Success(
                           isLightBackgroundTheme,
                           changeSavedList,
+                          savedList,
                         )
                       case 'FAILURE':
                         return this.Failure(isLightBackgroundTheme)
